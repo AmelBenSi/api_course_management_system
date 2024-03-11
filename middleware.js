@@ -1,4 +1,4 @@
-const { sequelize, User } = require('./models');
+const { getUser } = require('./queries');
 
 const withUser = async (req, res, next) => {
     // Get the user Id from request headers
@@ -9,18 +9,13 @@ const withUser = async (req, res, next) => {
     }
 
     // Find the user by its ID
-    const [user] = await sequelize.query('SELECT * FROM users WHERE UserID = :userId LIMIT 1', {
-      replacements: { userId },
-      type: sequelize.QueryTypes.SELECT,
-      mapToModel: true, // Specify mapping to model
-      model: User // Specify the User model
-    });
+    const [user] = await getUser(userId);
 
     if (!user) {
         return res.status(403).json({ error: 'Forbidden: User not found' });
     }
 
-    req.user = user.toJSON();
+    req.user = user;
       
     // If the user has the required role, continue to the next middleware or route handler
     next();
