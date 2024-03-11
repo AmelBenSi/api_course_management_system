@@ -9,7 +9,7 @@ const withUser = async (req, res, next) => {
     }
 
     // Find the user by its ID
-    const [user] = await getUser(userId);
+    const user = await getUser(userId);
 
     if (!user) {
         return res.status(403).json({ error: 'Forbidden: User not found' });
