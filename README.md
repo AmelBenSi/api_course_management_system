@@ -3,7 +3,7 @@
 2. Open `dbConnection.js` and change `database` to your database name.
 3. `npm install -g nodemon`
 4. `npm install`
-5. `nodemon server.js`. This ensures all changes to the code are effective without restarting the server.
+5. `nodemon src/server.js`. This ensures all changes to the code are effective without restarting the server.
 6. Try the APIs below with Postman. Notice to add a header with "user-id" to bypass role check.
 
 ## API List
