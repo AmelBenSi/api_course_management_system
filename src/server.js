@@ -31,7 +31,7 @@ app.patch('/api/courses/:id/toggle', checkAdminRole, async (req, res) => {
   try {
     // Get the course id from the request
     const courseId = req.params.id;
-
+    
     // Find the course by its ID
     const course = await getCourse(courseId);
 
