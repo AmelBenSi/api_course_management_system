@@ -10,13 +10,14 @@ app.post('/api/teachers/:teacherId/assign-courses', checkAdminRole, async (req, 
     const courses = req.body.courses;
     const user = req.user; // Extract user information from the middleware
 
+    /*
     try {
         // Check if the user is an admin
         if (user.RoleID !== 1) {
             return res.status(403).json({ error: 'Forbidden: Only admins can assign courses' });
         }
-
-        const db = await connectToDatabase();
+    */
+        Const db = await connectToDatabase();
         // Assuming 'assignCoursesToTeacher' is a function that updates the database
         await db.assignCoursesToTeacher(teacherId, courses, user.id); // Pass userId to the database function
         res.status(200).json({ message: 'Courses assigned successfully' });
