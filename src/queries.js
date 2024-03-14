@@ -68,17 +68,35 @@ const getAllEnrolments = async () => {
     }
   }
 
-  const getEnrolment = async (enrolmentID) => {
-    try {
-      const [rows] = await pool.query(`
-        SELECT * FROM enrolments WHERE EnrolmentID = ?
-        `, [enrolmentID]);
-      return rows[0];
-    } catch (err) {
-      console.log(err);
+    const getEnrolment = async (enrolmentID) => {
+      try {
+        const [rows] = await pool.query(`
+          SELECT * FROM enrolments WHERE EnrolmentID = ?
+          `, [enrolmentID]);
+        return rows[0];
+      } catch (err) {
+        console.log(err);
+        }
       }
-    }
   
+    const assignCoursesToTeacher = async (teacherId, courses) => {
+        try {
+            // Check if the teacherId and courses are provided
+            if (!teacherId || !courses || !Array.isArray(courses)) {
+                throw new Error('Invalid input data');
+            }
+    
+            // Update the teacher's record with the assigned courses in the database
+            await database.updateTeacherCourses(teacherId, courses);
+    
+            // Return success message or any relevant data
+            return { success: true, message: 'Courses assigned successfully' };
+        } catch (error) {
+            console.error('Error assigning courses:', error);
+            throw error;
+        }
+      }
+        
   const giveMark = async (enrolmentID, markValue) => {
     // Check if markValue is valid  (1 for fail, 2 for pass)
     if (markValue !== 1 && markValue !== 2) {
@@ -107,4 +125,5 @@ module.exports = {
   getAllEnrolments,
   getEnrolment,
   giveMark
+  assignCoursesToTeacher
 }
