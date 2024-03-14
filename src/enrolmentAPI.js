@@ -1,7 +1,7 @@
 const express = require('express');
 const { json } = require('body-parser');
 const { withUser, checkTeacherRole, withMark } = require('./middleware');
-const { getAllEnrolments, getEnrolment, giveMark} = require('./queries')
+const { getAllEnrolments, getEnrolment, giveMark } = require('./queries');
 
 // Create an Express app
 const app = express();
@@ -10,18 +10,16 @@ app.use(json());
 // Check userId before anything else
 app.use(withUser);
 
-
 // GET /enrolments
 app.get('/api/enrolments', async (req, res) => {
   try {
-    const user = req.user;
+    const { user } = req;
     if (user.RoleID !== 1) {
       const enrolments = await getAllEnrolments();
       res.json(enrolments);
     } else {
-      throw new Error ('Only teachers and students can access enrolments')
-    };
-    
+      throw new Error('Only teachers and students can access enrolments');
+    }
   } catch (err) {
     console.error('Error fetching enrolments:', err);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -55,7 +53,6 @@ app.patch('/api/enrolments/:id/mark', checkTeacherRole, async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 // Start the server
 const port = process.env.PORT || 5000;

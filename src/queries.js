@@ -1,4 +1,5 @@
-const { pool } = require('./dbConnection')
+/* eslint-disable consistent-return */
+const { pool } = require('./dbConnection');
 
 const getAllCourses = async () => {
   try {
@@ -9,7 +10,7 @@ const getAllCourses = async () => {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const getAvailableCourses = async () => {
   try {
@@ -20,7 +21,7 @@ const getAvailableCourses = async () => {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const getCourse = async (courseId) => {
   try {
@@ -31,7 +32,7 @@ const getCourse = async (courseId) => {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const getUser = async (userId) => {
   try {
@@ -42,7 +43,7 @@ const getUser = async (userId) => {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const toggleCourseAvailability = async (courseId) => {
   try {
@@ -55,39 +56,34 @@ const toggleCourseAvailability = async (courseId) => {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
-const assignCoursesToTeacher = async (teacherId, courses) => {
+const assignCoursesToTeacher = async (courseId, teacherId) => {
   try {
-      // Check if the teacherId and courses are provided
-      if (!teacherId || !courses || !Array.isArray(courses)) {
-          throw new Error('Invalid input data');
-      }
-
-      // Update the teacher's record with the assigned courses in the database
-      await database.updateTeacherCourses(teacherId, courses);
-
-      // Return success message or any relevant data
-      return { success: true, message: 'Courses assigned successfully' };
+    const [result] = await pool.execute(`
+      UPDATE courses
+      SET TeacherID = ?
+      WHERE CourseID = ?
+    `, [teacherId, courseId]);
+    return result;
   } catch (error) {
-      console.error('Error assigning courses:', error);
-      throw error;
+    console.error('Error assigning courses:', error);
+    throw error;
   }
-}
+};
 
 const displayAvailCoursestoStudents = async () => {
   try {
-    const [rows] = await pool.query (`
+    const [rows] = await pool.query(`
     SELECT courses.title, users.name FROM courses
     INNER JOIN Users ON Users.UserID = Courses.TeacherID
     WHERE Courses.isAvailable = 1
-  `);  
-  return rows;
-} catch (err) {
-  console.log(err);
+  `);
+    return rows;
+  } catch (err) {
+    console.log(err);
   }
-}
-
+};
 
 const toggleStudentEnrolment = async (courseId, userId) => {
   try {
@@ -106,7 +102,7 @@ const toggleStudentEnrolment = async (courseId, userId) => {
   } catch (err) {
     console.log(err);
   }
-}
+};
 
 const getAllEnrolments = async () => {
   try {
@@ -116,8 +112,8 @@ const getAllEnrolments = async () => {
     return rows;
   } catch (err) {
     console.log(err);
-    }
   }
+};
 
 const getEnrolment = async (enrolmentID) => {
   try {
@@ -127,14 +123,13 @@ const getEnrolment = async (enrolmentID) => {
     return rows[0];
   } catch (err) {
     console.log(err);
-    }
   }
-  
-        
+};
+
 const giveMark = async (enrolmentID, markValue) => {
   // Check if markValue is valid  (1 for fail, 2 for pass)
   if (markValue !== 1 && markValue !== 2) {
-    throw new Error ('Invalid mark value. Mark value must be 0 for fail or 1 for pass.');
+    throw new Error('Invalid mark value. Mark value must be 0 for fail or 1 for pass.');
   }
 
   try {
@@ -147,8 +142,7 @@ const giveMark = async (enrolmentID, markValue) => {
   } catch (err) {
     console.log(err);
   }
-}
-
+};
 
 module.exports = {
   getAllCourses,
@@ -161,5 +155,5 @@ module.exports = {
   giveMark,
   assignCoursesToTeacher,
   displayAvailCoursestoStudents,
-  toggleStudentEnrolment
-}
+  toggleStudentEnrolment,
+};
