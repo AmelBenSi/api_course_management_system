@@ -11,17 +11,6 @@ const getAllCourses = async () => {
   }
 }
 
-const getAvailableCourses = async () => {
-  try {
-    const [rows] = await pool.query(`
-      SELECT * FROM courses WHERE isAvailable = 1
-    `);
-    return rows;
-  } catch (err) {
-    console.log(err);
-  }
-}
-
 const getCourse = async (courseId) => {
   try {
     const [rows] = await pool.query(`
@@ -97,6 +86,40 @@ const getAllEnrolments = async () => {
     }
   }
 
+  const getAvailableCourses = async () => {
+    try {
+      const [rows] = await pool.query(`
+        SELECT Title, Name
+        FROM courses
+        INNER JOIN users
+        ON courses.TeacherID = users.UserID
+        WHERE isAvailable = 1
+      `);
+      return rows;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+
+  const toggleStudentEnrolment = async (courseId, userId) => {
+    try {
+      const [enrolmentStatus] = await pool.execute(`
+      INSERT INTO enrolments
+        (CourseID, UserID)
+      SELECT ?, ?
+      WHERE NOT EXISTS (
+          SELECT 1
+          FROM enrolments
+          WHERE CourseID = ?
+          AND UserID = ?
+      )
+      `, [courseId, userId]);
+      return enrolmentStatus;
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
 module.exports = {
   getAllCourses,
@@ -106,5 +129,6 @@ module.exports = {
   toggleCourseAvailability,
   getAllEnrolments,
   getEnrolment,
-  giveMark
+  giveMark,
+  toggleStudentEnrolment
 }
