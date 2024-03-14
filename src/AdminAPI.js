@@ -1,11 +1,11 @@
 const express = require('express');
-const { checkAdmin, withUser, connectToDatabase } = require('./middleware');
+const { checkAdminRole, withUser, connectToDatabase } = require('./middleware');
 const app = express();
 
 app.use(express.json());
 app.use(withUser); // Use withUser middleware for extracting userId
 
-app.post('/api/teachers/:teacherId/assign-courses', checkAdmin, async (req, res) => {
+app.post('/api/teachers/:teacherId/assign-courses', checkAdminRole, async (req, res) => {
     const teacherId = req.params.teacherId;
     const courses = req.body.courses;
     const user = req.user; // Extract user information from the middleware
