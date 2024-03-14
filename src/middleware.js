@@ -21,13 +21,25 @@ const withUser = async (req, res, next) => {
     next();
   };
 
+  // Ensure that a mark is given
+  const withMark = async (req, res, next) => {
+    // Get the mark from request headers
+    const markValue = req.body['mark'];
+
+    if (!markValue) {
+      return res.status(403).json({ error: 'Forbidden: You must specify a mark' });
+  }
+    req.mark = markValue; 
+    next();
+  }
+  
 // Middleware to check if the user has the role "student"
 const checkStudentRole = (req, res, next) => {
     // Assuming the user object is retrieved from the request object by the 'withUser' middleware
     const user = req.user;
   
     // Check if the user has the role "student"
-    if (user.RoleId !== 3) {
+    if (user.RoleID !== 3) {
       return res.status(403).json({ error: 'Forbidden: Only students can access this resource' });
     }
   
@@ -39,7 +51,7 @@ const checkStudentRole = (req, res, next) => {
 const checkAdminRole = (req, res, next) => {
     // Assuming the user object is retrieved from the request object by the 'withUser' middleware
     const user = req.user;
-  
+
     // Check if the user has the role "admin"
     if (user.RoleID !== 1) {
       return res.status(403).json({ error: 'Forbidden: Only admins can access this resource' });
@@ -55,8 +67,8 @@ const checkTeacherRole = (req, res, next) => {
     const user = req.user;
   
     // Check if the user has the role "teacher"
-    if (user.RoleId !== 2) {
-      return res.status(403).json({ error: 'Forbidden: Only teachers can access this resource' });
+    if (user.RoleID !== 2) {
+      return res.status(403).json({ error: 'Forbidden: Only teachers can access this resource '});
     }
   
     // If the user has the role "teacher", continue to the next middleware or route handler
@@ -67,3 +79,4 @@ exports.withUser = withUser;
 exports.checkAdminRole = checkAdminRole;
 exports.checkTeacherRole = checkTeacherRole;
 exports.checkStudentRole = checkStudentRole;
+exports.withMark = withMark
