@@ -119,35 +119,35 @@ const getAllEnrolments = async () => {
     }
   }
 
-    const getEnrolment = async (enrolmentID) => {
-      try {
-        const [rows] = await pool.query(`
-          SELECT * FROM enrolments WHERE EnrolmentID = ?
-          `, [enrolmentID]);
-        return rows[0];
-      } catch (err) {
-        console.log(err);
-        }
-      }
-  
-        
-  const giveMark = async (enrolmentID, markValue) => {
-    // Check if markValue is valid  (1 for fail, 2 for pass)
-    if (markValue !== 1 && markValue !== 2) {
-      throw new Error ('Invalid mark value. Mark value must be 0 for fail or 1 for pass.');
-    }
-
-    try {
-      const [result] = await pool.execute(`
-        UPDATE enrolments 
-        SET Mark = ?
-        WHERE EnrolmentID = ?
-      `, [markValue, enrolmentID]);
-      return result;
-    } catch (err) {
-      console.log(err);
+const getEnrolment = async (enrolmentID) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT * FROM enrolments WHERE EnrolmentID = ?
+      `, [enrolmentID]);
+    return rows[0];
+  } catch (err) {
+    console.log(err);
     }
   }
+  
+        
+const giveMark = async (enrolmentID, markValue) => {
+  // Check if markValue is valid  (1 for fail, 2 for pass)
+  if (markValue !== 1 && markValue !== 2) {
+    throw new Error ('Invalid mark value. Mark value must be 0 for fail or 1 for pass.');
+  }
+
+  try {
+    const [result] = await pool.execute(`
+      UPDATE enrolments 
+      SET Mark = ?
+      WHERE EnrolmentID = ?
+    `, [markValue, enrolmentID]);
+    return result;
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 
 module.exports = {
