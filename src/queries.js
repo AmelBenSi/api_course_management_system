@@ -57,6 +57,57 @@ const toggleCourseAvailability = async (courseId) => {
   }
 }
 
+const assignCoursesToTeacher = async (teacherId, courses) => {
+  try {
+      // Check if the teacherId and courses are provided
+      if (!teacherId || !courses || !Array.isArray(courses)) {
+          throw new Error('Invalid input data');
+      }
+
+      // Update the teacher's record with the assigned courses in the database
+      await database.updateTeacherCourses(teacherId, courses);
+
+      // Return success message or any relevant data
+      return { success: true, message: 'Courses assigned successfully' };
+  } catch (error) {
+      console.error('Error assigning courses:', error);
+      throw error;
+  }
+}
+
+const StudentsBrowseCourses = async () => {
+  try {
+    const [rows] = await pool.query (`
+    SELECT courses.title, users.name FROM courses
+    INNER JOIN Users ON Users.UserID = Courses.TeacherID
+    WHERE Courses.isAvailable = 1
+  `);  
+  return rows;
+} catch (err) {
+  console.log(err);
+  }
+}
+
+
+const toggleStudentEnrolment = async (courseId, userId) => {
+  try {
+    const [enrolmentStatus] = await pool.execute(`
+    INSERT INTO enrolments
+      (CourseID, UserID)
+    SELECT ?, ?
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM enrolments
+        WHERE CourseID = ?
+        AND UserID = ?
+    )
+    `, [courseId, userId]);
+    return enrolmentStatus;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const getAllEnrolments = async () => {
   try {
     const [rows] = await pool.query(`
@@ -79,23 +130,6 @@ const getAllEnrolments = async () => {
         }
       }
   
-    const assignCoursesToTeacher = async (teacherId, courses) => {
-        try {
-            // Check if the teacherId and courses are provided
-            if (!teacherId || !courses || !Array.isArray(courses)) {
-                throw new Error('Invalid input data');
-            }
-    
-            // Update the teacher's record with the assigned courses in the database
-            await database.updateTeacherCourses(teacherId, courses);
-    
-            // Return success message or any relevant data
-            return { success: true, message: 'Courses assigned successfully' };
-        } catch (error) {
-            console.error('Error assigning courses:', error);
-            throw error;
-        }
-      }
         
   const giveMark = async (enrolmentID, markValue) => {
     // Check if markValue is valid  (1 for fail, 2 for pass)
@@ -124,6 +158,8 @@ module.exports = {
   toggleCourseAvailability,
   getAllEnrolments,
   getEnrolment,
-  giveMark
-  assignCoursesToTeacher
+  giveMark,
+  assignCoursesToTeacher,
+  StudentsBrowseCourses,
+  toggleStudentEnrolment
 }
