@@ -75,7 +75,7 @@ const assignCoursesToTeacher = async (teacherId, courses) => {
   }
 }
 
-const StudentsBrowseCourses = async () => {
+const displayAvailCoursestoStudents = async () => {
   try {
     const [rows] = await pool.query (`
     SELECT courses.title, users.name FROM courses
@@ -160,6 +160,6 @@ module.exports = {
   getEnrolment,
   giveMark,
   assignCoursesToTeacher,
-  StudentsBrowseCourses,
+  displayAvailCoursestoStudents,
   toggleStudentEnrolment
 }
