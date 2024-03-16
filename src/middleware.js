@@ -27,10 +27,15 @@ const withMark = async (req, res, next) => {
   // Get the mark from request headers
   const markValue = req.body.mark;
 
-  if (!markValue) {
+  if (markValue === undefined || markValue === null) {
     return res.status(400).json({ error: 'Bad Request: You must specify a mark' });
   }
 
+  // Check if markValue is valid  (0 for fail, 1 for pass)
+  if (markValue !== 0 && markValue !== 1) {
+    return res.status(400).json({ error: 'Invalid mark value. Mark value must be 0 for fail or 1 for pass.'});
+  }
+  
   req.mark = markValue;
   next();
 };

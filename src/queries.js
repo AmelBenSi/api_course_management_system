@@ -133,11 +133,6 @@ const getEnrolment = async (enrolmentID) => {
 };
 
 const giveMark = async (enrolmentID, markValue) => {
-  // Check if markValue is valid  (1 for fail, 2 for pass)
-  if (markValue !== 1 && markValue !== 2) {
-    throw new Error('Invalid mark value. Mark value must be 0 for fail or 1 for pass.');
-  }
-
   try {
     const [result] = await pool.execute(`
       UPDATE enrolments 

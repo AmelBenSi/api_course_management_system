@@ -1,9 +1,9 @@
 /* eslint-disable consistent-return */
 const express = require('express');
 const { json } = require('body-parser');
-const { withUser, checkAdminRole } = require('./middleware');
+const { withUser, checkAdminRole, checkStudentRole, checkTeacherRole, withMark } = require('./middleware');
 const {
-  getAllCourses, getAvailableCourses, getCourse, toggleCourseAvailability, assignCoursesToTeacher,
+  getAllCourses, getAvailableCourses, getCourse, toggleCourseAvailability, assignCoursesToTeacher, toggleStudentEnrolment, getEnrolment, giveMark
 } = require('./queries');
 
 // Create an Express app
@@ -13,7 +13,7 @@ app.use(json());
 // Check userId before anything else
 app.use(withUser);
 
-// GET /courses
+// FR 3: Student can view available courses (Admin and teacher can view all) 
 app.get('/api/courses', async (req, res) => {
   try {
     const { user } = req;
@@ -30,6 +30,7 @@ app.get('/api/courses', async (req, res) => {
   }
 });
 
+// FR 1: Admin change availablity
 app.patch('/api/courses/:id/toggle', checkAdminRole, async (req, res) => {
   try {
     // Get the course id from the request
@@ -52,6 +53,7 @@ app.patch('/api/courses/:id/toggle', checkAdminRole, async (req, res) => {
   }
 });
 
+// FR 2: Admin assign course to teacher
 app.patch('/api/courses/:courseId/', checkAdminRole, async (req, res) => {
   const { courseId } = req.params;
   if (!courseId) return res.status(400).json({ message: 'Bad Request: Must specify course ID' });
@@ -69,6 +71,57 @@ app.patch('/api/courses/:courseId/', checkAdminRole, async (req, res) => {
   } catch (error) {
     console.error('Error assigning courses:', error); // Log detailed error
     res.status(500).json({ message: 'Error assigning courses' });
+  }
+});
+
+// FR 4: Student can enrol in a course once each time
+app.post('/api/availCourses/:id/enrolcourse', checkStudentRole, async (req, res) => {
+  try {
+  // Extract courseID from the request
+  const courseID = req.params.id; 
+  // Extract userID from the request header
+  const userID = req.headers['user-id']; 
+
+  
+      // Check if courseID is present and valid
+      if (!courseID) {
+          return res.status(403).json({ error: 'Forbidden: You must specify a courseID' });
+      }
+
+      // Enroll in course 
+      const result = await toggleStudentEnrolment(courseID, userID)
+      res.json(result);
+  } catch (err) {
+    console.error('Error fetching courses:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// FR 5: Teacher can pass or fail student
+app.use(withMark);
+
+app.patch('/api/enrolments/:id/mark', checkTeacherRole, async (req, res) => {
+  try {
+    // Get the enrolment id from the request
+    const enrolmentID = req.params.id;
+
+    // Find the enrolment by its ID
+    const enrolment = await getEnrolment(enrolmentID);
+
+    if (!enrolment) {
+      return res.status(404).json({ error: 'enrolment not found' });
+    }
+
+    // Get mark from the request
+    const markValue = req.mark;
+
+    // Give a mark
+    const result = await giveMark(enrolmentID, markValue);
+
+    res.json(result);
+  } catch (err) {
+    console.error('Error fetching courses:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
