@@ -85,19 +85,25 @@ const displayAvailCoursestoStudents = async () => {
   }
 };
 
-const toggleStudentEnrolment = async (courseId, userId) => {
+const toggleStudentEnrolment = async (courseID, userID) => {
   try {
+    // Check if the student is already enrolled in the specified course
+    const [existingEnrollment] = await pool.execute(`
+      SELECT * FROM enrolments
+      WHERE CourseID = ? AND UserID = ?
+    `, [courseID, userID]);
+
+    // If the student is already enrolled, return a message
+    if (existingEnrollment.length > 0) {
+      return "You are already enrolled in this course.";
+    }
+
+    // If the student is not enrolled, insert a new enrollment record
     const [enrolmentStatus] = await pool.execute(`
-    INSERT INTO enrolments
-      (CourseID, UserID)
-    SELECT ?, ?
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM enrolments
-        WHERE CourseID = ?
-        AND UserID = ?
-    )
-    `, [courseId, userId]);
+      INSERT INTO enrolments (CourseID, UserID)
+      VALUES (?, ?)
+    `, [courseID, userID]);
+
     return enrolmentStatus;
   } catch (err) {
     console.log(err);
