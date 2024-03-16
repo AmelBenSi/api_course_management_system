@@ -75,7 +75,7 @@ const assignCoursesToTeacher = async (courseId, teacherId) => {
 const displayAvailCoursestoStudents = async () => {
   try {
     const [rows] = await pool.query(`
-    SELECT courses.title, users.name FROM courses
+    SELECT Courses.Title, Users.Name FROM Courses
     INNER JOIN Users ON Users.UserID = Courses.TeacherID
     WHERE Courses.isAvailable = 1
   `);
