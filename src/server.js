@@ -1,9 +1,9 @@
 /* eslint-disable consistent-return */
 const express = require('express');
 const { json } = require('body-parser');
-const { withUser, checkAdminRole } = require('./middleware');
+const { withUser, checkAdminRole, checkStudentRole, checkTeacherRole, withMark } = require('./middleware');
 const {
-  getAllCourses, getAvailableCourses, getCourse, toggleCourseAvailability, assignCoursesToTeacher,
+  getAllCourses, getAvailableCourses, getCourse, toggleCourseAvailability, assignCoursesToTeacher, toggleStudentEnrolment, getEnrolment, giveMark
 } = require('./queries');
 
 // Create an Express app
