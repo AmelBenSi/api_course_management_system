@@ -75,19 +75,6 @@ const assignCoursesToTeacher = async (courseId, teacherId) => {
   }
 };
 
-const displayAvailCoursestoStudents = async () => {
-  try {
-    const [rows] = await pool.query(`
-    SELECT Courses.Title, Users.Name FROM Courses
-    INNER JOIN Users ON Users.UserID = Courses.TeacherID
-    WHERE Courses.isAvailable = 1
-  `);
-    return rows;
-  } catch (err) {
-    console.log(err);
-  }
-};
-
 const toggleStudentEnrolment = async (courseID, userID) => {
   try {
     // Check if the student is already enrolled in the specified course
@@ -158,6 +145,5 @@ module.exports = {
   getEnrolment,
   giveMark,
   assignCoursesToTeacher,
-  displayAvailCoursestoStudents,
   toggleStudentEnrolment,
 };
