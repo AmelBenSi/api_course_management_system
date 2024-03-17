@@ -24,7 +24,7 @@ const withUser = async (req, res, next) => {
 
 // Ensure that a mark is given
 const withMark = async (req, res, next) => {
-  // Get the mark from request headers
+  // Get the mark from request body
   const markValue = req.body.mark;
 
   if (markValue === undefined || markValue === null) {
