@@ -74,7 +74,7 @@ app.patch('/api/courses/:courseId/', checkAdminRole, async (req, res) => {
   }
 });
 
-// FR 4: Student can enrol in a course once each time
+// FR 4: Student can enrol in a course once 
 app.post('/api/availCourses/:id/enrolcourse', checkStudentRole, async (req, res) => {
   try {
   // Extract courseID from the request

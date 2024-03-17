@@ -15,7 +15,10 @@ const getAllCourses = async () => {
 const getAvailableCourses = async () => {
   try {
     const [rows] = await pool.query(`
-      SELECT * FROM courses WHERE isAvailable = 1
+      SELECT courses.CourseID, courses.Title, users.Name as TeacherName
+      FROM courses 
+      LEFT JOIN users ON courses.TeacherID = users.UserID
+      WHERE isAvailable = 1
     `);
     return rows;
   } catch (err) {
